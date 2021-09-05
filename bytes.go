@@ -10,16 +10,20 @@ type INT [4]byte
 func (i INT) Get() int32 {
 	return int32(binary.LittleEndian.Uint32(i[:4]))
 }
-func (i INT) Set(in int32) {
-	fmt.Printf("% x\n", uint32(0x1234567)) // prints 00000000 11111101
+func (i *INT) Set(in int32) {
 	binary.LittleEndian.PutUint32(i[:], uint32(in))
 	printAsBinary(i[:])
-	binary.BigEndian.PutUint32(i[:], uint32(in))
-	printAsBinary(i[:])
-	fmt.Println()
 }
 
-type ULING [4]byte
+type ULONG [4]byte
+
+func (i ULONG) Get() uint32 {
+	return binary.LittleEndian.Uint32(i[:4])
+}
+func (i *ULONG) Set(in uint32) {
+	binary.LittleEndian.PutUint32(i[:], in)
+	printAsBinary(i[:])
+}
 
 func printAsBinary(bytes []byte) {
 
