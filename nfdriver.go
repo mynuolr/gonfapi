@@ -88,97 +88,34 @@ const (
 )
 
 // NF_RULE
-type NF_RULE [83]byte
-
-func (r *NF_RULE) GetProtocol() int32 {
-	return int32(binary.LittleEndian.Uint32(r[:4]))
-}
-func (r *NF_RULE) SetProtocol(i int32) {
-	binary.LittleEndian.PutUint32(r[:4], uint32(i))
-}
-func (r *NF_RULE) GetProtocolId() uint32 {
-	return binary.LittleEndian.Uint32(r[4:8])
-}
-func (r *NF_RULE) SetProtocolID(i uint32) {
-	binary.LittleEndian.PutUint32(r[4:8], i)
-}
-func (r *NF_RULE) GetDirection() DIRECTION {
-	return DIRECTION(uint(r[8]))
-
-}
-func (r *NF_RULE) SetDirection(i DIRECTION) {
-	r[8] = byte(uint(i))
-}
-func (r *NF_RULE) GetLocalPort() uint16 {
-	return binary.LittleEndian.Uint16(r[9:11])
-
-}
-func (r *NF_RULE) SetLocalPort(i uint16) {
-	binary.LittleEndian.PutUint16(r[9:11], i)
-}
-func (r *NF_RULE) GetRemotePort() uint16 {
-	return binary.LittleEndian.Uint16(r[11:13])
-
-}
-func (r *NF_RULE) SetRemotePort(i uint16) {
-	binary.LittleEndian.PutUint16(r[11:13], i)
-}
-func (r *NF_RULE) GetIpFamily() uint16 {
-	return binary.LittleEndian.Uint16(r[13:15])
-
-}
-func (r *NF_RULE) SetIpFamily(i uint16) {
-	binary.LittleEndian.PutUint16(r[13:15], i)
-}
-func (r *NF_RULE) GetLocalIpAddress() []byte {
-	return r[15 : 15+MAX_IP_ADDRESS_LENGTH]
-
-}
-func (r *NF_RULE) GetLocalIpAddressMask() []byte {
-	return r[31 : 31+MAX_IP_ADDRESS_LENGTH]
-
-}
-func (r *NF_RULE) GetRemoteIpAddress() []byte {
-	return r[47 : 47+MAX_IP_ADDRESS_LENGTH]
-
-}
-func (r *NF_RULE) GetRemoteIpAddressMask() []byte {
-	return r[63 : 63+MAX_IP_ADDRESS_LENGTH]
-}
-func (r NF_RULE) GetFilteringFlag() uint32 {
-	return binary.LittleEndian.Uint32(r[79:])
-}
-func (r NF_RULE) SetFilteringFlag(i uint32) {
-	binary.LittleEndian.PutUint32(r[79:], i)
+type NF_RULE struct {
+	Protocol            INT32
+	ProcessId           UINT32
+	Direction           uint8
+	LocalPort           UINT16
+	RemotePort          UINT16
+	IpFamily            UINT16
+	LocalIpAddress      [MAX_IP_ADDRESS_LENGTH]byte
+	LocalIpAddressMask  [MAX_IP_ADDRESS_LENGTH]byte
+	RemoteIpAddress     [MAX_IP_ADDRESS_LENGTH]byte
+	RemoteIpAddressMask [MAX_IP_ADDRESS_LENGTH]byte
+	FilteringFlag       UINT32
 }
 
 // NF_PORT_RANGE
 type NF_PORT_RANGE struct {
-	valueLow  [2]byte
-	valueHigh [2]byte
-}
-
-func (n *NF_PORT_RANGE) GetValueLow() uint16 {
-	return binary.LittleEndian.Uint16(n.valueLow[:])
-}
-func (n *NF_PORT_RANGE) GetValueHigh() uint16 {
-	return binary.LittleEndian.Uint16(n.valueHigh[:])
-}
-func (n *NF_PORT_RANGE) SetValueLow(i uint16) {
-	binary.LittleEndian.PutUint16(n.valueLow[:], i)
-}
-func (n *NF_PORT_RANGE) SetValueHigh(i uint16) {
-	binary.LittleEndian.PutUint16(n.valueHigh[:], i)
+	ValueLow  UINT16
+	ValueHigh UINT16
 }
 
 //NF_RULE_EX
 type NF_RULE_EX struct {
 	NF_RULE
-	processName         [520]byte
+	processName         [260]WChar_t
 	LocalPortRange      NF_PORT_RANGE
 	RemotePortRange     NF_PORT_RANGE
 	redirectTo          [28]byte
-	localProxyProcessId [4]byte
+	localProxyProcessId UINT32
 }
 
 func (n *NF_RULE_EX) GetProcessName() string {
@@ -188,11 +125,11 @@ func (n *NF_RULE_EX) GetProcessName() string {
 func (n *NF_RULE_EX) SetProcessName(s string) {
 	//dec := unicode.UTF16(unicode.LittleEndian, unicode.IgnoreBOM).NewDecoder()
 	var si, _ = syscall.UTF16FromString(s)
-	l := len(si) * 2
+	l := len(si)
 	sh := (*reflect.SliceHeader)(unsafe.Pointer(&si))
 	sh.Cap = l
 	sh.Len = l
-	copy(n.processName[:], *(*[]byte)(unsafe.Pointer(&sh)))
+	copy(n.processName[:], *(*[]WChar_t)(unsafe.Pointer(&sh)))
 
 }
 func (n *NF_RULE_EX) GetRedirectTo() []byte {
@@ -301,5 +238,5 @@ func (n *NF_IP_PACKET_OPTIONS) GetFlags() uint32 {
 }
 
 type NF_DATA struct {
-	Code INT
+	Code INT32
 }

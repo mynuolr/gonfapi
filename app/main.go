@@ -17,18 +17,10 @@ type sd struct {
 
 func main() {
 	t()
-	var x = new(gonfapi.NF_RULE_EX)
-	fmt.Println(x.GetProtocolId())
-	x.SetProtocolID(305419896)
-	fmt.Println(x.GetProtocolId())
-	x.SetDirection(gonfapi.D_BOTH)
-	fmt.Println(x.GetDirection())
-	x.SetLocalPort(3306)
-	x.SetRemotePort(20)
-	x.SetProcessName("test")
+	var x = new(gonfapi.NF_RULE)
+
 	fmt.Println(x)
 	fmt.Println(unsafe.Sizeof(*x))
-	fmt.Println(x.GetProcessName())
 
 }
 func t() {
