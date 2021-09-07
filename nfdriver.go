@@ -1,7 +1,6 @@
 package gonfapi
 
 import (
-	"encoding/binary"
 	"reflect"
 	"syscall"
 	"unsafe"
@@ -111,11 +110,11 @@ type NF_PORT_RANGE struct {
 //NF_RULE_EX
 type NF_RULE_EX struct {
 	NF_RULE
-	processName         [260]WChar_t
+	processName         [260]UINT16
 	LocalPortRange      NF_PORT_RANGE
 	RemotePortRange     NF_PORT_RANGE
-	redirectTo          [28]byte
-	localProxyProcessId UINT32
+	RedirectTo          [28]byte
+	LocalProxyProcessId UINT32
 }
 
 func (n *NF_RULE_EX) GetProcessName() string {
@@ -129,24 +128,18 @@ func (n *NF_RULE_EX) SetProcessName(s string) {
 	sh := (*reflect.SliceHeader)(unsafe.Pointer(&si))
 	sh.Cap = l
 	sh.Len = l
-	copy(n.processName[:], *(*[]WChar_t)(unsafe.Pointer(&sh)))
+	copy(n.processName[:], *(*[]UINT16)(unsafe.Pointer(&sh)))
 
-}
-func (n *NF_RULE_EX) GetRedirectTo() []byte {
-	return n.redirectTo[:]
-}
-func (n *NF_RULE_EX) GetLocalProxyProcessId() uint32 {
-	return binary.LittleEndian.Uint32(n.localProxyProcessId[:])
 }
 
 /**
 *	TCP connection properties UNALIGNED
 **/
 type NF_TCP_CONN_INFO struct {
-	FilteringFlag FILTERING_FLAG
-	ProcessId     uint32
+	FilteringFlag UINT32
+	ProcessId     UINT32
 	Direction     uint8
-	IpFamily      uint16
+	IpFamily      UINT16
 	LocalAddress  [MAX_ADDRESS_LENGTH]byte
 	RemoteAddress [MAX_ADDRESS_LENGTH]byte
 }
@@ -155,8 +148,8 @@ type NF_TCP_CONN_INFO struct {
 *	UDP endpoint properties UNALIGNED
 **/
 type NF_UDP_CONN_INFO struct {
-	ProcessId    uint32
-	IpFamily     uint16
+	ProcessId    UINT32
+	IpFamily     UINT16
 	LocalAddress [MAX_ADDRESS_LENGTH]byte
 }
 
@@ -164,9 +157,9 @@ type NF_UDP_CONN_INFO struct {
 *	UDP TDI_CONNECT request properties UNALIGNED
 **/
 type NF_UDP_CONN_REQUEST struct {
-	FilteringFlag FILTERING_FLAG
-	ProcessId     uint32
-	IpFamily      uint16
+	FilteringFlag UINT32
+	ProcessId     UINT32
+	IpFamily      UINT16
 	LocalAddress  [MAX_ADDRESS_LENGTH]byte
 	RemoteAddress [MAX_ADDRESS_LENGTH]byte
 }
@@ -175,8 +168,8 @@ type NF_UDP_CONN_REQUEST struct {
 *	UDP options UNALIGNED
 **/
 type NF_UDP_OPTIONS struct {
-	Flags         uint32
-	OptionsLength int32
+	Flags         UINT32
+	OptionsLength INT32
 	Options       [1]byte //Options of variable size
 }
 
@@ -192,51 +185,51 @@ const (
 *	IP options
 **/
 type NF_IP_PACKET_OPTIONS struct {
-	ip_family         [2]byte
-	ipHeaderSize      [4]byte
-	compartmentId     [4]byte
-	interfaceIndex    [4]byte
-	subInterfaceIndex [4]byte
-	flags             [4]byte
-}
-
-func (n *NF_IP_PACKET_OPTIONS) SetIpFamily(ip uint16) {
-	binary.LittleEndian.PutUint16(n.ip_family[:], ip)
-}
-func (n *NF_IP_PACKET_OPTIONS) GetIpFamily() uint16 {
-	return binary.LittleEndian.Uint16(n.ip_family[:])
-}
-func (n *NF_IP_PACKET_OPTIONS) SetIpHeaderSize(ip uint32) {
-	binary.LittleEndian.PutUint32(n.ipHeaderSize[:], ip)
-}
-func (n *NF_IP_PACKET_OPTIONS) GetIpHeaderSize() uint32 {
-	return binary.LittleEndian.Uint32(n.ipHeaderSize[:])
-}
-func (n *NF_IP_PACKET_OPTIONS) SetCompartmentId(id uint32) {
-	binary.LittleEndian.PutUint32(n.compartmentId[:], id)
-}
-func (n *NF_IP_PACKET_OPTIONS) GetCompartmentId() uint32 {
-	return binary.LittleEndian.Uint32(n.compartmentId[:])
-}
-func (n *NF_IP_PACKET_OPTIONS) SetInterfaceIndex(idx uint32) {
-	binary.LittleEndian.PutUint32(n.interfaceIndex[:], idx)
-}
-func (n *NF_IP_PACKET_OPTIONS) GetInterfaceIndex() uint32 {
-	return binary.LittleEndian.Uint32(n.interfaceIndex[:])
-}
-func (n *NF_IP_PACKET_OPTIONS) SetSubInterfaceIndex(idx uint32) {
-	binary.LittleEndian.PutUint32(n.subInterfaceIndex[:], idx)
-}
-func (n *NF_IP_PACKET_OPTIONS) GetSubInterfaceIndex() uint32 {
-	return binary.LittleEndian.Uint32(n.subInterfaceIndex[:])
-}
-func (n *NF_IP_PACKET_OPTIONS) SetFlags(flags uint32) {
-	binary.LittleEndian.PutUint32(n.flags[:], flags)
-}
-func (n *NF_IP_PACKET_OPTIONS) GetFlags() uint32 {
-	return binary.LittleEndian.Uint32(n.flags[:])
+	IpFamily          UINT16
+	IpHeaderSize      UINT32
+	CompartmentId     UINT32
+	InterfaceIndex    UINT32
+	SubInterfaceIndex UINT32
+	Flags             UINT32
 }
 
 type NF_DATA struct {
-	Code INT32
+	Code       INT32
+	ID         UINT64
+	BufferSize UINT32
+	Buffer     byte
+}
+
+type NF_BUFFERS struct {
+	InBuf, InBufLen, OutBuf, OutBufLen uint64
+}
+type NF_READ_RESULT struct {
+	Length uint64
+}
+type NF_FLOWCTL_DATA struct {
+	InLimit, OutLimit UINT64
+}
+type NF_FLOWCTL_MODIFY_DATA struct {
+	FcHandle uint32
+	Data     NF_FLOWCTL_DATA
+}
+type NF_FLOWCTL_STAT struct {
+	InBytes, OutBytes UINT64
+}
+type NF_FLOWCTL_SET_DATA struct {
+	EndpointId UINT64
+	FcHandle   UINT32
+}
+
+type NF_BINDING_RULE struct {
+	Protocol           INT32
+	ProcessId          UINT32
+	ProcessName        [260]UINT16
+	LocalPort          UINT16
+	IpFamily           UINT16
+	LocalIpAddress     [MAX_IP_ADDRESS_LENGTH]byte
+	LocalIpAddressMask [MAX_IP_ADDRESS_LENGTH]byte
+	NewLocalIpAddress  [MAX_IP_ADDRESS_LENGTH]byte
+	NewLocalPort       UINT16
+	FilteringFlag      UINT32
 }

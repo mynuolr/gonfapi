@@ -3,7 +3,20 @@ package gonfapi
 import (
 	"encoding/binary"
 	"fmt"
+	"unsafe"
 )
+
+var hostByteOrder binary.ByteOrder
+
+func init() {
+	var i int32 = 0x01020304
+	if *(*byte)(unsafe.Pointer(&i)) == 0x04 {
+		hostByteOrder = binary.LittleEndian
+	} else {
+		hostByteOrder = binary.BigEndian
+	}
+
+}
 
 func printAsBinary(bytes []byte) {
 
@@ -20,41 +33,49 @@ func printAsBinary(bytes []byte) {
 type INT16 [2]byte
 
 func (i INT16) Get() int16 {
-	return int16(binary.LittleEndian.Uint16(i[:]))
+	return int16(hostByteOrder.Uint16(i[:]))
 }
 func (i *INT16) Set(in int16) {
-	binary.LittleEndian.PutUint16(i[:], uint16(in))
+	hostByteOrder.PutUint16(i[:], uint16(in))
 	printAsBinary(i[:])
 }
 
 type INT32 [4]byte
 
 func (i INT32) Get() int32 {
-	return int32(binary.LittleEndian.Uint32(i[:]))
+	return int32(hostByteOrder.Uint32(i[:]))
 }
 func (i *INT32) Set(in int32) {
-	binary.LittleEndian.PutUint32(i[:], uint32(in))
+	hostByteOrder.PutUint32(i[:], uint32(in))
 	printAsBinary(i[:])
 }
 
 type UINT16 [2]byte
 
 func (i UINT16) Get() uint16 {
-	return binary.LittleEndian.Uint16(i[:])
+	return hostByteOrder.Uint16(i[:])
 }
 func (i *UINT16) Set(in uint16) {
-	binary.LittleEndian.PutUint16(i[:], in)
+	hostByteOrder.PutUint16(i[:], in)
 	printAsBinary(i[:])
 }
 
 type UINT32 [4]byte
 
 func (i UINT32) Get() uint32 {
-	return binary.LittleEndian.Uint32(i[:])
+	return hostByteOrder.Uint32(i[:])
 }
 func (i *UINT32) Set(in uint32) {
-	binary.LittleEndian.PutUint32(i[:], in)
+	hostByteOrder.PutUint32(i[:], in)
 	printAsBinary(i[:])
 }
 
-type WChar_t [2]byte
+type UINT64 [8]byte
+
+func (i *UINT64) Get() uint64 {
+	return hostByteOrder.Uint64(i[:])
+}
+func (i *UINT64) Set(in uint64) {
+	hostByteOrder.PutUint64(i[:], in)
+	printAsBinary(i[:])
+}
