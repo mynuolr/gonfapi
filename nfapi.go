@@ -3,60 +3,73 @@ package gonfapi
 import (
 	"syscall"
 	"unsafe"
+
+	"golang.org/x/sys/windows"
+)
+
+type NF_STATUS int32
+
+const (
+	NF_STATUS_SUCCESS             NF_STATUS = 0
+	NF_STATUS_FAIL                NF_STATUS = -1
+	NF_STATUS_INVALID_ENDPOINT_ID NF_STATUS = -2
+	NF_STATUS_NOT_INITIALIZED     NF_STATUS = -3
+	NF_STATUS_IO_ERROR            NF_STATUS = -4
+	NF_STATUS_REBOOT_REQUIRED     NF_STATUS = -5
 )
 
 type NFApi struct {
-	dll                          *syscall.LazyDLL
-	nf_init                      *syscall.LazyProc
-	nf_free                      *syscall.LazyProc
-	nf_registerDriver            *syscall.LazyProc
-	nf_registerDriverEx          *syscall.LazyProc
-	nf_unRegisterDriver          *syscall.LazyProc
-	nf_tcpSetConnectionState     *syscall.LazyProc
-	nf_tcpPostSend               *syscall.LazyProc
-	nf_tcpPostReceive            *syscall.LazyProc
-	nf_tcpClose                  *syscall.LazyProc
-	nf_setTCPTimeout             *syscall.LazyProc
-	nf_tcpDisableFiltering       *syscall.LazyProc
-	nf_udpSetConnectionState     *syscall.LazyProc
-	nf_udpPostSend               *syscall.LazyProc
-	nf_udpPostReceive            *syscall.LazyProc
-	nf_udpDisableFiltering       *syscall.LazyProc
-	nf_ipPostSend                *syscall.LazyProc
-	nf_ipPostReceive             *syscall.LazyProc
-	nf_addRule                   *syscall.LazyProc
-	nf_deleteRules               *syscall.LazyProc
-	nf_setRules                  *syscall.LazyProc
-	nf_addRuleEx                 *syscall.LazyProc
-	nf_setRulesEx                *syscall.LazyProc
-	nf_getConnCount              *syscall.LazyProc
-	nf_tcpSetSockOpt             *syscall.LazyProc
-	nf_getProcessNameA           *syscall.LazyProc
-	nf_getProcessNameW           *syscall.LazyProc
-	nf_getProcessNameFromKernel  *syscall.LazyProc
-	nf_adjustProcessPriviledges  *syscall.LazyProc
-	nf_tcpIsProxy                *syscall.LazyProc
-	nf_setOptions                *syscall.LazyProc
-	nf_completeTCPConnectRequest *syscall.LazyProc
-	nf_completeUDPConnectRequest *syscall.LazyProc
-	nf_getTCPConnInfo            *syscall.LazyProc
-	nf_getUDPConnInfo            *syscall.LazyProc
-	nf_setIPEventHandler         *syscall.LazyProc
-	nf_addFlowCtl                *syscall.LazyProc
-	nf_deleteFlowCtl             *syscall.LazyProc
-	nf_setTCPFlowCtl             *syscall.LazyProc
-	nf_setUDPFlowCtl             *syscall.LazyProc
-	nf_modifyFlowCtl             *syscall.LazyProc
-	nf_getFlowCtlStat            *syscall.LazyProc
-	nf_getTCPStat                *syscall.LazyProc
-	nf_getUDPStat                *syscall.LazyProc
-	nf_addBindingRule            *syscall.LazyProc
-	nf_deleteBindingRules        *syscall.LazyProc
-	nf_getDriverType             *syscall.LazyProc
+	dll                          *windows.LazyDLL
+	nf_init                      *windows.LazyProc
+	nf_free                      *windows.LazyProc
+	nf_registerDriver            *windows.LazyProc
+	nf_registerDriverEx          *windows.LazyProc
+	nf_unRegisterDriver          *windows.LazyProc
+	nf_tcpSetConnectionState     *windows.LazyProc
+	nf_tcpPostSend               *windows.LazyProc
+	nf_tcpPostReceive            *windows.LazyProc
+	nf_tcpClose                  *windows.LazyProc
+	nf_setTCPTimeout             *windows.LazyProc
+	nf_tcpDisableFiltering       *windows.LazyProc
+	nf_udpSetConnectionState     *windows.LazyProc
+	nf_udpPostSend               *windows.LazyProc
+	nf_udpPostReceive            *windows.LazyProc
+	nf_udpDisableFiltering       *windows.LazyProc
+	nf_ipPostSend                *windows.LazyProc
+	nf_ipPostReceive             *windows.LazyProc
+	nf_addRule                   *windows.LazyProc
+	nf_deleteRules               *windows.LazyProc
+	nf_setRules                  *windows.LazyProc
+	nf_addRuleEx                 *windows.LazyProc
+	nf_setRulesEx                *windows.LazyProc
+	nf_getConnCount              *windows.LazyProc
+	nf_tcpSetSockOpt             *windows.LazyProc
+	nf_getProcessNameA           *windows.LazyProc
+	nf_getProcessNameW           *windows.LazyProc
+	nf_getProcessNameFromKernel  *windows.LazyProc
+	nf_adjustProcessPriviledges  *windows.LazyProc
+	nf_tcpIsProxy                *windows.LazyProc
+	nf_setOptions                *windows.LazyProc
+	nf_completeTCPConnectRequest *windows.LazyProc
+	nf_completeUDPConnectRequest *windows.LazyProc
+	nf_getTCPConnInfo            *windows.LazyProc
+	nf_getUDPConnInfo            *windows.LazyProc
+	nf_setIPEventHandler         *windows.LazyProc
+	nf_addFlowCtl                *windows.LazyProc
+	nf_deleteFlowCtl             *windows.LazyProc
+	nf_setTCPFlowCtl             *windows.LazyProc
+	nf_setUDPFlowCtl             *windows.LazyProc
+	nf_modifyFlowCtl             *windows.LazyProc
+	nf_getFlowCtlStat            *windows.LazyProc
+	nf_getTCPStat                *windows.LazyProc
+	nf_getUDPStat                *windows.LazyProc
+	nf_addBindingRule            *windows.LazyProc
+	nf_deleteBindingRules        *windows.LazyProc
+	nf_getDriverType             *windows.LazyProc
 }
 
 func (a *NFApi) Load(dll string) error {
-	a.dll = syscall.NewLazyDLL(dll)
+	a.dll = windows.NewLazyDLL(dll)
 	e := a.dll.Load()
 	if e != nil {
 		return e
@@ -116,161 +129,293 @@ func (a *NFApi) Load(dll string) error {
 	a.nf_getDriverType = a.dll.NewProc("nf_getDriverType")
 	return nil
 }
-func (a NFApi) NfInit(driverName string, Ev *NF_EventHandler) {
+func ret(r uintptr, _ uintptr, err error) (NF_STATUS, error) {
+	return NF_STATUS(r), err
+}
+
+//初始化
+func (a NFApi) NfInit(driverName string, Ev *NF_EventHandler) (NF_STATUS, error) {
 	sp, err := syscall.BytePtrFromString(driverName)
 	if err != nil {
-		return
+		return NF_STATUS_FAIL, err
 	}
-	a.nf_init.Call(uintptr(unsafe.Pointer(sp)), uintptr(unsafe.Pointer(Ev)))
+	return ret(a.nf_init.Call(uintptr(unsafe.Pointer(sp)), uintptr(unsafe.Pointer(Ev))))
 }
+
+//释放
 func (a NFApi) NfFree() {
 	a.nf_free.Call()
 }
-func (a NFApi) NfRegisterDriver(driverName string) (int, error) {
+
+//注册驱动
+func (a NFApi) NfRegisterDriver(driverName string) (NF_STATUS, error) {
 	sp, err := syscall.BytePtrFromString(driverName)
 	if err != nil {
-		return 0, err
+		return NF_STATUS_FAIL, err
 	}
-	_, r, err := a.nf_registerDriver.Call(uintptr(unsafe.Pointer(sp)))
-	return int(r), err
+	return ret(a.nf_registerDriver.Call(uintptr(unsafe.Pointer(sp))))
 }
-func (a NFApi) NfRegisterDriverEx(driverName string, path string) (int, error) {
+
+//从其他位置注册驱动
+func (a NFApi) NfRegisterDriverEx(driverName string, path string) (NF_STATUS, error) {
 	sp, err := syscall.BytePtrFromString(driverName)
 	if err != nil {
-		return 0, err
+		return NF_STATUS_FAIL, err
 	}
 	pathp, err := syscall.BytePtrFromString(path)
 	if err != nil {
-		return 0, err
+		return NF_STATUS_FAIL, err
 	}
 
-	_, r, err := a.nf_registerDriverEx.Call(uintptr(unsafe.Pointer(sp)), uintptr(unsafe.Pointer(pathp)))
-	return int(r), err
+	return ret(a.nf_registerDriverEx.Call(uintptr(unsafe.Pointer(sp)), uintptr(unsafe.Pointer(pathp))))
 }
-func (a NFApi) NfUnRegisterDriver(driverName string) {
+
+//卸载驱动服务（需要重启或手动停止服务才可以重新注册）
+func (a NFApi) NfUnRegisterDriver(driverName string) (NF_STATUS, error) {
 	sp, err := syscall.BytePtrFromString(driverName)
 	if err != nil {
-		return
+		return NF_STATUS_FAIL, err
 	}
-	a.nf_unRegisterDriver.Call(uintptr(unsafe.Pointer(sp)))
+	return ret(a.nf_unRegisterDriver.Call(uintptr(unsafe.Pointer(sp))))
 }
-func (a NFApi) NfTcpSetConnectionState(id uint64, suspended bool) {
+
+//设置TCP链接状态
+func (a NFApi) NfTcpSetConnectionState(id uint64, suspended bool) (NF_STATUS, error) {
 	var suspend int32 = 0
 	if suspended {
 		suspend = 1
 	}
-	a.nf_tcpSetConnectionState.Call(uintptr(id), uintptr(suspend))
+	return ret(a.nf_tcpSetConnectionState.Call(uintptr(id), uintptr(suspend)))
 }
 
-func (a NFApi) NfTcpPostSend(id uint64, bufer []byte) {
-	ptr := unsafe.Pointer(&bufer)
+//TCP数据发送
+func (a NFApi) NfTcpPostSend(id uint64, bufer []byte) (NF_STATUS, error) {
+	ptr := unsafe.Pointer(&bufer[0])
 	len := len(bufer)
-	a.nf_tcpPostSend.Call(uintptr(id), uintptr(ptr), uintptr(len))
+	return ret(a.nf_tcpPostSend.Call(uintptr(id), uintptr(ptr), uintptr(len)))
 }
-func (a NFApi) NfTcpPostReceive(id uint64, bufer []byte) {
-	ptr := unsafe.Pointer(&bufer)
-	len := len(bufer)
-	a.nf_tcpPostReceive.Call(uintptr(id), uintptr(ptr), uintptr(len))
+
+//TCP数据接受
+func (a NFApi) NfTcpPostReceive(id uint64, bufer []byte) (NF_STATUS, error) {
+	ptr := unsafe.Pointer(&bufer[0])
+	var len = int32(len(bufer))
+	return ret(a.nf_tcpPostReceive.Call(uintptr(id), uintptr(ptr), uintptr(len)))
 }
-func (a NFApi) NfTcpClose(id uint64) {
-	a.nf_tcpClose.Call(uintptr(id))
+
+//tcp关闭
+func (a NFApi) NfTcpClose(id uint64) (NF_STATUS, error) {
+	return ret(a.nf_tcpClose.Call(uintptr(id)))
 }
-func (a NFApi) NfSetTCPTimeout(id uint32) {
-	a.nf_tcpClose.Call(uintptr(id))
+
+//tcp超时
+func (a NFApi) NfSetTCPTimeout(id uint32) (NF_STATUS, error) {
+	return ret(a.nf_tcpClose.Call(uintptr(id)))
 }
-func (a NFApi) NfTcpDisableFiltering(id uint64) {
-	a.nf_tcpDisableFiltering.Call(uintptr(id))
+
+//禁用TCP过滤
+func (a NFApi) NfTcpDisableFiltering(id uint64) (NF_STATUS, error) {
+	return ret(a.nf_tcpDisableFiltering.Call(uintptr(id)))
 }
 
 // UDP
-func (a NFApi) NfUdpSetConnectionState(id uint64, suspended bool) {
+
+//设置UDP链接状态
+func (a NFApi) NfUdpSetConnectionState(id uint64, suspended bool) (NF_STATUS, error) {
 	var suspend int32 = 0
 	if suspended {
 		suspend = 1
 	}
-	a.nf_udpSetConnectionState.Call(uintptr(id), uintptr(suspend))
+	return ret(a.nf_udpSetConnectionState.Call(uintptr(id), uintptr(suspend)))
 }
-func (a NFApi) NfUdpPostSend(id uint64, remoteAddress []uint8, buf []byte, option *NF_UDP_OPTIONS) {
-	a.nf_udpPostSend.Call(
+
+//发送UDP数据
+func (a NFApi) NfUdpPostSend(id uint64, remoteAddress []uint8, buf []byte, option *NF_UDP_OPTIONS) (NF_STATUS, error) {
+	return ret(a.nf_udpPostSend.Call(
 		uintptr(id),
-		uintptr(unsafe.Pointer(&remoteAddress)),
-		uintptr(unsafe.Pointer(&buf)),
-		uintptr(len(buf)),
+		uintptr(unsafe.Pointer(&remoteAddress[0])),
+		uintptr(unsafe.Pointer(&buf[0])),
+		uintptr(int32(len(buf))),
 		uintptr(unsafe.Pointer(option)),
-	)
+	))
 }
-func (a NFApi) NfUdpPostReceive(id uint64, remoteAddress []uint8, buf []byte, option *NF_UDP_OPTIONS) {
-	a.nf_udpPostReceive.Call(
+
+//接收UDP数据
+func (a NFApi) NfUdpPostReceive(id uint64, remoteAddress []uint8, buf []byte, option *NF_UDP_OPTIONS) (NF_STATUS, error) {
+	return ret(a.nf_udpPostReceive.Call(
 		uintptr(id),
-		uintptr(unsafe.Pointer(&remoteAddress)),
-		uintptr(unsafe.Pointer(&buf)),
-		uintptr(len(buf)),
+		uintptr(unsafe.Pointer(&remoteAddress[0])),
+		uintptr(unsafe.Pointer(&buf[0])),
+		uintptr(int32(len(buf))),
 		uintptr(unsafe.Pointer(option)),
-	)
+	))
 }
-func (a NFApi) NfUdpDisableFiltering(id uint64) {
-	a.nf_udpDisableFiltering.Call(uintptr(id))
+
+//禁用UDP过滤
+func (a NFApi) NfUdpDisableFiltering(id uint64) (NF_STATUS, error) {
+	return ret(a.nf_udpDisableFiltering.Call(uintptr(id)))
 }
 
 //IP
-func (a NFApi) NfIpPostSend(buf []byte, option *NF_IP_PACKET_OPTIONS) {
-	a.nf_ipPostSend.Call(
-		uintptr(unsafe.Pointer(&buf)),
-		uintptr(len(buf)),
+
+//发送IP数据
+func (a NFApi) NfIpPostSend(buf []byte, option *NF_IP_PACKET_OPTIONS) (NF_STATUS, error) {
+	return ret(a.nf_ipPostSend.Call(
+		uintptr(unsafe.Pointer(&buf[0])),
+		uintptr(int32(len(buf))),
 		uintptr(unsafe.Pointer(option)),
-	)
+	))
 }
-func (a NFApi) NfIpPostReceive(buf []byte, option *NF_IP_PACKET_OPTIONS) {
-	a.nf_ipPostReceive.Call(
-		uintptr(unsafe.Pointer(&buf)),
-		uintptr(len(buf)),
+
+//接收UDP数据
+func (a NFApi) NfIpPostReceive(buf []byte, option *NF_IP_PACKET_OPTIONS) (NF_STATUS, error) {
+	return ret(a.nf_ipPostReceive.Call(
+		uintptr(unsafe.Pointer(&buf[0])),
+		uintptr(int32(len(buf))),
 		uintptr(unsafe.Pointer(option)),
-	)
+	))
 }
 
 // Rule
-func (a NFApi) NfAddRule(rule *NF_RULE, ToHead bool) {
+
+//添加规则
+func (a NFApi) NfAddRule(rule *NF_RULE, ToHead bool) (NF_STATUS, error) {
 	var h int32 = 0
 	if ToHead {
 		h = 1
 	}
-	a.nf_addRule.Call(uintptr(unsafe.Pointer(rule)), uintptr(h))
+	return ret(a.nf_addRule.Call(uintptr(unsafe.Pointer(rule)), uintptr(h)))
 }
-func (a NFApi) NfDeleteRules() {
-	a.nf_deleteRules.Call()
-}
-func (a NFApi) NfSetRules(rule []NF_RULE) {
 
-	a.nf_setRules.Call(uintptr(unsafe.Pointer(&rule)), uintptr(int32(len(rule))))
+//删除规则
+func (a NFApi) NfDeleteRules() (NF_STATUS, error) {
+	return ret(a.nf_deleteRules.Call())
 }
-func (a NFApi) NfAddRuleEx(rule *NF_RULE_EX, ToHead bool) {
+
+//设置规则
+func (a NFApi) NfSetRules(rule []NF_RULE) (NF_STATUS, error) {
+	return ret(a.nf_setRules.Call(uintptr(unsafe.Pointer(&rule)), uintptr(int32(len(rule)))))
+}
+
+//添加扩展规则
+func (a NFApi) NfAddRuleEx(rule *NF_RULE_EX, ToHead bool) (NF_STATUS, error) {
 	var h int32 = 0
 	if ToHead {
 		h = 1
 	}
-	a.nf_addRuleEx.Call(uintptr(unsafe.Pointer(rule)), uintptr(h))
+	return ret(a.nf_addRuleEx.Call(uintptr(unsafe.Pointer(rule)), uintptr(h)))
 }
 
-func (a NFApi) NfSetRulesEx(rule []NF_RULE_EX) {
-	a.nf_setRulesEx.Call(uintptr(unsafe.Pointer(&rule)), uintptr(int32(len(rule))))
+//设置扩展规则
+func (a NFApi) NfSetRulesEx(rule []NF_RULE_EX) (NF_STATUS, error) {
+	return ret(a.nf_setRulesEx.Call(uintptr(unsafe.Pointer(&rule)), uintptr(int32(len(rule)))))
 }
 
 //
 // Debug routine
 //
-func (a NFApi) NfGetConnCount() {
-	a.nf_getConnCount.Call()
+func (a NFApi) NfGetConnCount() (uint32, error) {
+	r, _, err := a.nf_getConnCount.Call()
+	return uint32(r), err
 }
-func (a NFApi) NfTcpSetSockOpt(id uint64, optname int32, optval []byte) {
-	a.nf_tcpSetSockOpt.Call(
+
+//设置TCP链接参数
+func (a NFApi) NfTcpSetSockOpt(id uint64, optname int32, optval []byte) (NF_STATUS, error) {
+	return ret(a.nf_tcpSetSockOpt.Call(
 		uintptr(id),
 		uintptr(optname),
-		uintptr(unsafe.Pointer(&optname)),
+		uintptr(unsafe.Pointer(&optval[0])),
 		uintptr(int32(len(optval))),
-	)
+	))
 }
-func (a NFApi) NfGetProcessNameW(processId uint16) string {
+
+//获取进程名称
+func (a NFApi) NfGetProcessNameW(processId uint32) (string, bool, error) {
 	buf := [260]uint16{}
-	a.nf_getProcessNameW.Call(uintptr(processId), uintptr(unsafe.Pointer(&buf)), uintptr(uint16(260)))
-	return syscall.UTF16ToString(buf[:])
+	stat, _, err := a.nf_getProcessNameW.Call(uintptr(processId), uintptr(unsafe.Pointer(&buf)), uintptr(uint16(260)))
+	return syscall.UTF16ToString(buf[:]), stat == 1, err
+}
+
+//获取进程名称(内核)
+func (a NFApi) NfGetProcessNameFromKernel(processId uint32) (string, bool, error) {
+	buf := [260]uint16{}
+	stat, _, err := a.nf_getProcessNameFromKernel.Call(uintptr(processId), uintptr(unsafe.Pointer(&buf)), uintptr(uint16(260)))
+	return syscall.UTF16ToString(buf[:]), stat == 1, err
+}
+
+//运行当前进程查看所有进行名称
+func (a NFApi) NfAdjustProcessPriviledges() {
+	a.nf_adjustProcessPriviledges.Call()
+}
+
+//进程TCP是否代理
+func (a NFApi) NfTcpIsProxy(processId uint32) (bool, error) {
+	b, _, err := a.nf_tcpIsProxy.Call(uintptr(processId))
+	return b == 1, err
+}
+
+//设置NFAPI选项
+func (a NFApi) NfSetOptions(nThreads uint16, flag uint16) {
+	a.nf_setOptions.Call(uintptr(nThreads), uintptr(flag))
+}
+
+//完成TCP请求
+func (a NFApi) NfCompleteTCPConnectRequest(id uint64, pConnInfo *NF_TCP_CONN_INFO) (NF_STATUS, error) {
+	return ret(a.nf_completeTCPConnectRequest.Call(uintptr(id), uintptr(unsafe.Pointer(pConnInfo))))
+}
+
+//完成UDP请求
+func (a NFApi) NfCompleteUDPConnectRequest(id uint64, pConnInfo *NF_UDP_CONN_INFO) (NF_STATUS, error) {
+	return ret(a.nf_completeUDPConnectRequest.Call(uintptr(id), uintptr(unsafe.Pointer(pConnInfo))))
+}
+
+//获取TCP链接信息
+func (a NFApi) NfGetTCPConnInfo(id uint64, pConnInfo *NF_TCP_CONN_INFO) (NF_STATUS, error) {
+	return ret(a.nf_getTCPConnInfo.Call(uintptr(id), uintptr(unsafe.Pointer(pConnInfo))))
+}
+
+//获取UDP链接信息
+func (a NFApi) NfGetUDPConnInfo(id uint64, pConnInfo *NF_UDP_CONN_INFO) (NF_STATUS, error) {
+	return ret(a.nf_getUDPConnInfo.Call(uintptr(id), uintptr(unsafe.Pointer(pConnInfo))))
+}
+
+//设置IP事件
+//func (a NFApi) NfSetIPEventHandler()
+
+func (a NFApi) NfAddFlowCtl(pData *NF_FLOWCTL_DATA, pFcHandle *uint32) (NF_STATUS, error) {
+	return ret(a.nf_addFlowCtl.Call(uintptr(unsafe.Pointer(pData)), uintptr(unsafe.Pointer(pFcHandle))))
+}
+func (a NFApi) NfDeleteFlowCtl(fcHandle uint32) (NF_STATUS, error) {
+	return ret(a.nf_deleteFlowCtl.Call(uintptr((fcHandle))))
+}
+func (a NFApi) NfSetTCPFlowCtl(id uint64, fcHandle uint32) (NF_STATUS, error) {
+	return ret(a.nf_setTCPFlowCtl.Call(uintptr(id), uintptr((fcHandle))))
+}
+func (a NFApi) NfSetUDPFlowCtl(id uint64, fcHandle uint32) (NF_STATUS, error) {
+	return ret(a.nf_setUDPFlowCtl.Call(uintptr(id), uintptr((fcHandle))))
+}
+func (a NFApi) NfModifyFlowCtl(fcHandle uint32, pData *NF_FLOWCTL_DATA) (NF_STATUS, error) {
+	return ret(a.nf_modifyFlowCtl.Call(uintptr(fcHandle), uintptr(unsafe.Pointer(pData))))
+}
+func (a NFApi) NfGetFlowCtlStat(fcHandle uint32, pData *NF_FLOWCTL_STAT) (NF_STATUS, error) {
+	return ret(a.nf_getFlowCtlStat.Call(uintptr(fcHandle), uintptr(unsafe.Pointer(pData))))
+}
+func (a NFApi) NfGetTCPStat(id uint64, pData *NF_FLOWCTL_STAT) (NF_STATUS, error) {
+	return ret(a.nf_getTCPStat.Call(uintptr(id), uintptr(unsafe.Pointer(pData))))
+}
+func (a NFApi) NfGetUDPStat(id uint64, pData *NF_FLOWCTL_STAT) (NF_STATUS, error) {
+	return ret(a.nf_getUDPStat.Call(uintptr(id), uintptr(unsafe.Pointer(pData))))
+}
+func (a NFApi) NfAddBindingRule(prule *NF_BINDING_RULE, toHead bool) (NF_STATUS, error) {
+	var t int32 = 0
+	if toHead {
+		t = 1
+	}
+	return ret(a.nf_getUDPStat.Call(uintptr(unsafe.Pointer(prule)), uintptr(t)))
+}
+func (a NFApi) NfDeleteBindingRules() (NF_STATUS, error) {
+	return ret(a.nf_deleteBindingRules.Call())
+}
+func (a NFApi) NfGetDriverType() (uint32, error) {
+	r, _, err := a.nf_getDriverType.Call()
+	return uint32(r), err
 }
