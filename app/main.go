@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"net"
 	"os"
 	"time"
 
@@ -11,20 +12,25 @@ import (
 var api = &gonfapi.NFApi{}
 
 func main() {
+	fmt.Printf("%d\n", []byte(net.ParseIP("45.81.5.114").To16()))
 
 	fmt.Println(api.Load("nfapi.dll"))
+	api.NfAdjustProcessPriviledges()
 	rule := &gonfapi.NF_RULE{}
-	rule.RemotePort.Set(6003)
-	fmt.Println()
+	//rule.RemotePort.BigEndianSet(443)
+	rule.FilteringFlag.LittleEndianSet(uint32(gonfapi.NF_FILTER | gonfapi.NF_INDICATE_CONNECT_REQUESTS))
+	rule.RemotePort.BigEndianSet(443)
+	rule.Protocol.Set(6)
+	fmt.Println(rule)
 	wd, _ := os.Getwd()
 	fmt.Println(api.NfRegisterDriverEx("nfapi2", wd))
 	api.NfFree()
-	api.NfAddRule(rule, true)
+
 	ev := &gonfapi.NF_EventHandler{}
 	cb := e{}
 	ev.Build(&cb)
-	api.NfInit("nfapi2", ev)
-	api.NfAdjustProcessPriviledges()
+	fmt.Println(api.NfInit("nfapi2", ev))
+	fmt.Println(api.NfAddRule(rule, true))
 	defer func() {
 		api.NfFree()
 	}()
@@ -45,17 +51,21 @@ func (e *e) ThreadEnd() uintptr {
 }
 
 func (e *e) TcpConnectRequest(id uint64, pConnInfo *gonfapi.NF_TCP_CONN_INFO) uintptr {
-	fmt.Println("TcpConnectRequest", id, pConnInfo)
+	fmt.Println("TcpConnectRequest", id, pConnInfo.RemoteAddress[4:])
+	fmt.Printf("%s\n", net.IP(pConnInfo.RemoteAddress[4:8]))
 	return 0
 }
 
 func (e *e) TcpConnected(id uint64, pConnInfo *gonfapi.NF_TCP_CONN_INFO) uintptr {
-	fmt.Println("TcpConnected", id, pConnInfo)
+	fmt.Println("TcpConnected", id, pConnInfo.RemoteAddress[8:])
+	fmt.Printf("%s\n", net.IP(pConnInfo.RemoteAddress[8:24]).To16())
+
 	return 0
 }
 
 func (e *e) TcpClosed(id uint64, pConnInfo *gonfapi.NF_TCP_CONN_INFO) uintptr {
 	fmt.Println("TcpClosed", id, pConnInfo)
+
 	return 0
 }
 
