@@ -84,6 +84,8 @@ const (
 	MAX_IP_ADDRESS_LENGTH = 16
 	AF_INET               = 2
 	AF_INET6              = 23
+	IPPROTO_UDP           = 17
+	IPPROTO_TCP           = 6
 )
 
 // NF_RULE
@@ -93,11 +95,11 @@ type NF_RULE struct {
 	Direction           uint8
 	LocalPort           UINT16
 	RemotePort          UINT16
-	IpFamily            UINT16
-	LocalIpAddress      [MAX_IP_ADDRESS_LENGTH]byte
-	LocalIpAddressMask  [MAX_IP_ADDRESS_LENGTH]byte
-	RemoteIpAddress     [MAX_IP_ADDRESS_LENGTH]byte
-	RemoteIpAddressMask [MAX_IP_ADDRESS_LENGTH]byte
+	IpFamily            INT16
+	LocalIpAddress      IpAddress
+	LocalIpAddressMask  IpAddress
+	RemoteIpAddress     IpAddress
+	RemoteIpAddressMask IpAddress
 	FilteringFlag       UINT32
 }
 
@@ -113,7 +115,7 @@ type NF_RULE_EX struct {
 	processName         [260]UINT16
 	LocalPortRange      NF_PORT_RANGE
 	RemotePortRange     NF_PORT_RANGE
-	RedirectTo          [28]byte
+	RedirectTo          SockaddrInx
 	LocalProxyProcessId UINT32
 }
 
@@ -140,8 +142,8 @@ type NF_TCP_CONN_INFO struct {
 	ProcessId     UINT32
 	Direction     uint8
 	IpFamily      UINT16
-	LocalAddress  [MAX_ADDRESS_LENGTH]byte
-	RemoteAddress [MAX_ADDRESS_LENGTH]byte
+	LocalAddress  SockaddrInx
+	RemoteAddress SockaddrInx
 }
 
 /**
@@ -150,7 +152,7 @@ type NF_TCP_CONN_INFO struct {
 type NF_UDP_CONN_INFO struct {
 	ProcessId    UINT32
 	IpFamily     UINT16
-	LocalAddress [MAX_ADDRESS_LENGTH]byte
+	LocalAddress SockaddrInx
 }
 
 /**
@@ -160,8 +162,8 @@ type NF_UDP_CONN_REQUEST struct {
 	FilteringFlag UINT32
 	ProcessId     UINT32
 	IpFamily      UINT16
-	LocalAddress  [MAX_ADDRESS_LENGTH]byte
-	RemoteAddress [MAX_ADDRESS_LENGTH]byte
+	LocalAddress  SockaddrInx
+	RemoteAddress SockaddrInx
 }
 
 /**
@@ -227,9 +229,9 @@ type NF_BINDING_RULE struct {
 	ProcessName        [260]UINT16
 	LocalPort          UINT16
 	IpFamily           UINT16
-	LocalIpAddress     [MAX_IP_ADDRESS_LENGTH]byte
-	LocalIpAddressMask [MAX_IP_ADDRESS_LENGTH]byte
-	NewLocalIpAddress  [MAX_IP_ADDRESS_LENGTH]byte
+	LocalIpAddress     IpAddress
+	LocalIpAddressMask IpAddress
+	NewLocalIpAddress  IpAddress
 	NewLocalPort       UINT16
 	FilteringFlag      UINT32
 }
