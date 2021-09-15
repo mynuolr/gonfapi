@@ -1,6 +1,7 @@
 package gonfapi
 
 import (
+	"errors"
 	"syscall"
 	"unsafe"
 
@@ -68,6 +69,7 @@ type NFApi struct {
 	nf_getDriverType             *windows.LazyProc
 }
 
+//读取DLL
 func (a *NFApi) Load(dll string) error {
 	a.dll = windows.NewLazyDLL(dll)
 	e := a.dll.Load()
@@ -130,6 +132,9 @@ func (a *NFApi) Load(dll string) error {
 	return nil
 }
 func ret(r uintptr, _ uintptr, err error) (NF_STATUS, error) {
+	if errors.Is(err, syscall.Errno(0)) {
+		return NF_STATUS(r), nil
+	}
 	return NF_STATUS(r), err
 }
 
@@ -229,7 +234,7 @@ func (a NFApi) NfUdpSetConnectionState(id uint64, suspended bool) (NF_STATUS, er
 }
 
 //发送UDP数据
-func (a NFApi) NfUdpPostSend(id uint64, remoteAddress []uint8, buf []byte, option *NF_UDP_OPTIONS) (NF_STATUS, error) {
+func (a NFApi) NfUdpPostSend(id uint64, remoteAddress []byte, buf []byte, option *NF_UDP_OPTIONS) (NF_STATUS, error) {
 	return ret(a.nf_udpPostSend.Call(
 		uintptr(id),
 		uintptr(unsafe.Pointer(&remoteAddress[0])),
@@ -240,7 +245,7 @@ func (a NFApi) NfUdpPostSend(id uint64, remoteAddress []uint8, buf []byte, optio
 }
 
 //接收UDP数据
-func (a NFApi) NfUdpPostReceive(id uint64, remoteAddress []uint8, buf []byte, option *NF_UDP_OPTIONS) (NF_STATUS, error) {
+func (a NFApi) NfUdpPostReceive(id uint64, remoteAddress []byte, buf []byte, option *NF_UDP_OPTIONS) (NF_STATUS, error) {
 	return ret(a.nf_udpPostReceive.Call(
 		uintptr(id),
 		uintptr(unsafe.Pointer(&remoteAddress[0])),
@@ -418,4 +423,13 @@ func (a NFApi) NfDeleteBindingRules() (NF_STATUS, error) {
 func (a NFApi) NfGetDriverType() (uint32, error) {
 	r, _, err := a.nf_getDriverType.Call()
 	return uint32(r), err
+}
+
+func NewLoad(dll string) (*NFApi, error) {
+	api := &NFApi{}
+	if err := api.Load(dll); err != nil {
+		return nil, err
+	} else {
+		return api, nil
+	}
 }

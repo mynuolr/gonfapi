@@ -2,24 +2,27 @@ package gonfapi
 
 import "syscall"
 
+//事件回调接口 所有返回值为0
 type EventHandler interface {
 	ThreadStart() uintptr
 	ThreadEnd() uintptr
 	TcpConnectRequest(id uint64, pConnInfo *NF_TCP_CONN_INFO) uintptr
 	TcpConnected(id uint64, pConnInfo *NF_TCP_CONN_INFO) uintptr
 	TcpClosed(id uint64, pConnInfo *NF_TCP_CONN_INFO) uintptr
-	TcpReceive(id uint64, buf uintptr, len int32) uintptr
-	TcpSend(id uint64, buf uintptr, len int32) uintptr
+	TcpReceive(id uint64, buf *byte, len int32) uintptr
+	TcpSend(id uint64, buf *byte, len int32) uintptr
 	TcpCanReceive(id uint64) uintptr
 	TcpCanSend(id uint64) uintptr
 	UdpCreated(id uint64, pConnInfo *NF_UDP_CONN_INFO) uintptr
 	UdpConnectRequest(id uint64, pConnInfo *NF_UDP_CONN_REQUEST) uintptr
 	UdpClosed(id uint64, pConnInfo *NF_UDP_CONN_INFO) uintptr
-	UdpReceive(id uint64, remoteAddress uintptr, buf uintptr, len int32, options *NF_UDP_OPTIONS) uintptr
-	UdpSend(id uint64, remoteAddress uintptr, buf uintptr, len int32, options *NF_UDP_OPTIONS) uintptr
+	UdpReceive(id uint64, remoteAddress *byte, buf *byte, len int32, options *NF_UDP_OPTIONS) uintptr
+	UdpSend(id uint64, remoteAddress *byte, buf *byte, len int32, options *NF_UDP_OPTIONS) uintptr
 	UdpCanReceive(id uint64) uintptr
 	UdpCanSend(id uint64) uintptr
 }
+
+//NF_EventHandler 传递到dll的结构体 所有字段皆为回调参数指针
 type NF_EventHandler struct {
 	ThreadStart       uintptr
 	ThreadEnd         uintptr
@@ -39,6 +42,7 @@ type NF_EventHandler struct {
 	UdpCanSend        uintptr
 }
 
+//赋值EventHandler的指针
 func (eh *NF_EventHandler) Build(e EventHandler) {
 	eh.ThreadStart = syscall.NewCallbackCDecl(e.ThreadStart)
 	eh.ThreadEnd = syscall.NewCallbackCDecl(e.ThreadEnd)
