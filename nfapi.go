@@ -424,3 +424,12 @@ func (a NFApi) NfGetDriverType() (uint32, error) {
 	r, _, err := a.nf_getDriverType.Call()
 	return uint32(r), err
 }
+
+func NewLoad(dll string) (*NFApi, error) {
+	api := &NFApi{}
+	if err := api.Load(dll); err != nil {
+		return nil, err
+	} else {
+		return api, nil
+	}
+}
