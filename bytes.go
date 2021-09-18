@@ -60,6 +60,12 @@ func (s *SockaddrInx) String() string {
 	_, ip := s.GetIP()
 	return fmt.Sprintf("[%s]:%d", ip, s.GetPort())
 }
+func (s *SockaddrInx) ToBytes() (data []byte) {
+	sh := (*reflect.SliceHeader)(unsafe.Pointer(&data))
+	sh.Data = uintptr(unsafe.Pointer(s))
+	sh.Len = 23
+	return
+}
 func (s *SockaddrInx) SetIP(v4 bool, ip net.IP) {
 	if v4 {
 		s.Family.Set(AF_INET)

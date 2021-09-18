@@ -16,8 +16,8 @@ type EventHandler interface {
 	UdpCreated(id uint64, pConnInfo *NF_UDP_CONN_INFO) uintptr
 	UdpConnectRequest(id uint64, pConnInfo *NF_UDP_CONN_REQUEST) uintptr
 	UdpClosed(id uint64, pConnInfo *NF_UDP_CONN_INFO) uintptr
-	UdpReceive(id uint64, remoteAddress *byte, buf *byte, len int32, options *NF_UDP_OPTIONS) uintptr
-	UdpSend(id uint64, remoteAddress *byte, buf *byte, len int32, options *NF_UDP_OPTIONS) uintptr
+	UdpReceive(id uint64, remoteAddress *SockaddrInx, buf *byte, len int32, options *NF_UDP_OPTIONS) uintptr
+	UdpSend(id uint64, remoteAddress *SockaddrInx, buf *byte, len int32, options *NF_UDP_OPTIONS) uintptr
 	UdpCanReceive(id uint64) uintptr
 	UdpCanSend(id uint64) uintptr
 }
