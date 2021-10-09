@@ -1,6 +1,6 @@
 package gonfapi
 
-import "syscall"
+import "golang.org/x/sys/windows"
 
 //事件回调接口 所有返回值为0
 type EventHandler interface {
@@ -44,20 +44,20 @@ type NF_EventHandler struct {
 
 //赋值EventHandler的指针
 func (eh *NF_EventHandler) Build(e EventHandler) {
-	eh.ThreadStart = syscall.NewCallbackCDecl(e.ThreadStart)
-	eh.ThreadEnd = syscall.NewCallbackCDecl(e.ThreadEnd)
-	eh.TcpConnectRequest = syscall.NewCallbackCDecl(e.TcpConnectRequest)
-	eh.TcpConnected = syscall.NewCallbackCDecl(e.TcpConnected)
-	eh.TcpClosed = syscall.NewCallbackCDecl(e.TcpClosed)
-	eh.TcpReceive = syscall.NewCallbackCDecl(e.TcpReceive)
-	eh.TcpSend = syscall.NewCallbackCDecl(e.TcpSend)
-	eh.TcpCanReceive = syscall.NewCallbackCDecl(e.TcpCanReceive)
-	eh.TcpCanSend = syscall.NewCallbackCDecl(e.TcpCanSend)
-	eh.UdpCreated = syscall.NewCallbackCDecl(e.UdpCreated)
-	eh.UdpConnectRequest = syscall.NewCallbackCDecl(e.UdpConnectRequest)
-	eh.UdpClosed = syscall.NewCallbackCDecl(e.UdpClosed)
-	eh.UdpReceive = syscall.NewCallbackCDecl(e.UdpReceive)
-	eh.UdpSend = syscall.NewCallbackCDecl(e.UdpSend)
-	eh.UdpCanReceive = syscall.NewCallbackCDecl(e.UdpCanReceive)
-	eh.UdpCanSend = syscall.NewCallbackCDecl(e.UdpCanSend)
+	eh.ThreadStart = windows.NewCallbackCDecl(e.ThreadStart)
+	eh.ThreadEnd = windows.NewCallbackCDecl(e.ThreadEnd)
+	eh.TcpConnectRequest = windows.NewCallbackCDecl(e.TcpConnectRequest)
+	eh.TcpConnected = windows.NewCallbackCDecl(e.TcpConnected)
+	eh.TcpClosed = windows.NewCallbackCDecl(e.TcpClosed)
+	eh.TcpReceive = windows.NewCallbackCDecl(e.TcpReceive)
+	eh.TcpSend = windows.NewCallbackCDecl(e.TcpSend)
+	eh.TcpCanReceive = windows.NewCallbackCDecl(e.TcpCanReceive)
+	eh.TcpCanSend = windows.NewCallbackCDecl(e.TcpCanSend)
+	eh.UdpCreated = windows.NewCallbackCDecl(e.UdpCreated)
+	eh.UdpConnectRequest = windows.NewCallbackCDecl(e.UdpConnectRequest)
+	eh.UdpClosed = windows.NewCallbackCDecl(e.UdpClosed)
+	eh.UdpReceive = windows.NewCallbackCDecl(e.UdpReceive)
+	eh.UdpSend = windows.NewCallbackCDecl(e.UdpSend)
+	eh.UdpCanReceive = windows.NewCallbackCDecl(e.UdpCanReceive)
+	eh.UdpCanSend = windows.NewCallbackCDecl(e.UdpCanSend)
 }

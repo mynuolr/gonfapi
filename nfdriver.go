@@ -2,8 +2,10 @@ package gonfapi
 
 import (
 	"reflect"
-	"syscall"
+
 	"unsafe"
+
+	"golang.org/x/sys/windows"
 )
 
 // C enum and #define is 4Bytes
@@ -121,11 +123,11 @@ type NF_RULE_EX struct {
 
 func (n *NF_RULE_EX) GetProcessName() string {
 	//dec := unicode.UTF16(unicode.LittleEndian, unicode.IgnoreBOM).NewDecoder()
-	return syscall.UTF16ToString(*(*[]uint16)(unsafe.Pointer(&n.processName[0])))
+	return windows.UTF16ToString(*(*[]uint16)(unsafe.Pointer(&n.processName[0])))
 }
 func (n *NF_RULE_EX) SetProcessName(s string) {
 	//dec := unicode.UTF16(unicode.LittleEndian, unicode.IgnoreBOM).NewDecoder()
-	var si, _ = syscall.UTF16FromString(s)
+	var si, _ = windows.UTF16FromString(s)
 	l := len(si)
 	sh := (*reflect.SliceHeader)(unsafe.Pointer(&si))
 	sh.Cap = l
@@ -172,7 +174,16 @@ type NF_UDP_CONN_REQUEST struct {
 type NF_UDP_OPTIONS struct {
 	Flags         UINT32
 	OptionsLength INT32
-	Options       [1]byte //Options of variable size
+	Options       [2048]byte //Options of variable size
+}
+
+func (op NF_UDP_OPTIONS) GetBytes() (data []byte) {
+	sh := (*reflect.SliceHeader)(unsafe.Pointer(&data))
+	l := 4 + 4 + op.OptionsLength.Get()
+	sh.Data = uintptr(unsafe.Pointer(&op))
+	sh.Len = int(l)
+	sh.Cap = int(l)
+	return
 }
 
 // IP
